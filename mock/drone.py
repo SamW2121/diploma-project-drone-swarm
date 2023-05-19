@@ -3,7 +3,7 @@ import time
 
 
 class TelloDrone:
-    def __init__(self, host="10.25.35.130", port=8889, state_udp_port=8890):
+    def __init__(self, host="10.25.35.127", port=8889, state_udp_port=8890):
         self.host = host
         self.port = port
         self.state_udp_port = state_udp_port

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Drone Control</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to bottom, #ff6699, #66ccff);
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    h1 {
+      color: #000;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+      margin-top: 20px;
+    }
+
+    .button-grid-top {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #ffffff;
+      color: #333333;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #e1e1e1;
+    }
+
+    button.active-btn {
+      background-color: #cccccc;
+    }
+
+    .error-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: #ff0000;
+      color: #ffffff;
+      padding: 10px;
+      font-size: 14px;
+      text-align: center;
+      z-index: 9999;
+    }
+
+    .video-screen {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: black;
+      width: 640px;
+      height: 360px;
+      display: none;
+      z-index: 1;
+    }
+
+    .fullscreen-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: transparent;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      z-index: 2;
+    }
+
+    .exit-fullscreen-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: transparent;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      z-index: 2;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: transparent;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Drone Control</h1>
+
+    <div class="button-grid-top">
+      <button id="takeoffBtn">Take Off</button>
+      <button id="landBtn">Land</button>
+      <button id="startStreamBtn">Start Video Stream</button>
+    </div>
+
+    <div class="button-grid">
+      <button id="moveLeftBtn">Move Left (&larr;)</button>
+      <button id="moveForwardBtn">Move Forward (&uarr;)</button>
+      <button id="moveRightBtn">Move Right (&rarr;)</button>
+      <button id="moveBackwardBtn">Move Backward (&darr;)</button>
+    </div>
+
+    <div class="video-screen">
+      <video id="videoFeed" width="100%" height="100%" controls>
+        <source src="" type="video/mp4">
+      </video>
+      <button id="fullscreenBtn" class="fullscreen-btn">Fullscreen</button>
+      <button id="exitFullscreenBtn" class="exit-fullscreen-btn">Exit Fullscreen</button>
+      <button id="closeBtn" class="close-btn">Close</button>
+    </div>
+
+    <div id="popupContainer"></div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      var videoElement = document.getElementById("videoFeed");
+
+      // Function to send a command to the drone
+      function sendCommand(command) {
+        // Your code here...
+        console.log('Sending command:', command);
+      }
+
+      // Function to display a popup message
+      function displayPopup(message) {
+        var popupHtml = '<div class="error-popup">' + message + '</div>';
+        $("#popupContainer").html(popupHtml);
+
+        // Remove the popup after a certain duration (e.g., 3 seconds)
+        setTimeout(function() {
+          $(".error-popup").remove();
+        }, 3000);
+      }
+
+      // Function to toggle the video screen
+      function toggleVideoScreen() {
+        $(".video-screen").fadeToggle();
+      }
+
+      // Event listeners for arrow key presses
+      $(document).keydown(function(event) {
+        switch (event.which) {
+          case 37: // Left arrow key
+            sendCommand("move_left");
+            applyActiveStyle($("#moveLeftBtn"));
+            break;
+          case 38: // Up arrow key
+            sendCommand("move_forward");
+            applyActiveStyle($("#moveForwardBtn"));
+            break;
+          case 39: // Right arrow key
+            sendCommand("move_right");
+            applyActiveStyle($("#moveRightBtn"));
+            break;
+          case 40: // Down arrow key
+            sendCommand("move_backward");
+            applyActiveStyle($("#moveBackwardBtn"));
+            break;
+        }
+      });
+
+      // Function to apply active style to the button
+      function applyActiveStyle(button) {
+        $(".button-grid button").removeClass("active-btn");
+        button.addClass("active-btn");
+      }
+
+      // Button click event listeners
+      $("#takeoffBtn").click(function() {
+        sendCommand("takeoff");
+      });
+
+      $("#landBtn").click(function() {
+        sendCommand("land");
+      });
+
+      $("#startStreamBtn").click(function() {
+        sendCommand("start_stream");
+        toggleVideoScreen();
+      });
+
+      $("#moveLeftBtn").click(function() {
+        sendCommand("move_left");
+        applyActiveStyle($(this));
+      });
+
+      $("#moveForwardBtn").click(function() {
+        sendCommand("move_forward");
+        applyActiveStyle($(this));
+      });
+
+      $("#moveRightBtn").click(function() {
+        sendCommand("move_right");
+        applyActiveStyle($(this));
+      });
+
+      $("#moveBackwardBtn").click(function() {
+        sendCommand("move_backward");
+        applyActiveStyle($(this));
+      });
+
+      // Fullscreen button click event listener
+      $("#fullscreenBtn").click(function() {
+        if (videoElement.requestFullscreen) {
+          videoElement.requestFullscreen();
+        } else if (videoElement.mozRequestFullScreen) {
+          videoElement.mozRequestFullScreen();
+        } else if (videoElement.webkitRequestFullscreen) {
+          videoElement.webkitRequestFullscreen();
+        } else if (videoElement.msRequestFullscreen) {
+          videoElement.msRequestFullscreen();
+        }
+      });
+
+      // Exit fullscreen button click event listener
+      $("#exitFullscreenBtn").click(function() {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      });
+
+      // Close button click event listener
+      $("#closeBtn").click(function() {
+        toggleVideoScreen();
+        videoElement.pause();
+      });
+
+      // Simulating error on button click
+      $("#landBtn").click(function() {
+        displayPopup("Error: Failed to land the drone");
+      });
+    });
+  </script>
+</body>
+</html>
