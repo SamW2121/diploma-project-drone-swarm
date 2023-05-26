@@ -7,7 +7,7 @@ import io
 import numpy as np
 
 app = FastAPI()
-drone = tellopy.Tello()
+drone = tellopy.Tello("10.25.35.127")
 
 # Start video streaming in separate thread
 def start_drone_stream():

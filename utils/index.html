@@ -1,275 +1,244 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Drone Control</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(to bottom, #ff6699, #66ccff);
-    }
+    <style>
+         html, body {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(to bottom, #ff6699, #66ccff);
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
 
-    .container {
-      text-align: center;
-    }
+        .arrow-btn {
+            width: 100px;
+            height: 50px;
+            border: solid black;
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
-    h1 {
-      color: #000;
-    }
+        .arrow-btn:hover {
+            background-color: lightgrey;
+        }
 
-    .button-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-gap: 10px;
-      margin-top: 20px;
-    }
+        .arrow-btn:active {
+            background-color: darkgrey;
+        }
 
-    .button-grid-top {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-gap: 10px;
-      margin-bottom: 20px;
-    }
+        .arrow-btn.pressed {
+            background-color: grey !important;
+        }
 
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #ffffff;
-      color: #333333;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+        #start-stream-btn,
+        #connect-btn {
+            width: 150px;
+            height: 40px;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
-    button:hover {
-      background-color: #e1e1e1;
-    }
+        .video-screen {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background-color: #f1f1f1;
+            display: none;
+        }
 
-    button.active-btn {
-      background-color: #cccccc;
-    }
+        .fullscreen-btn,
+        .exit-fullscreen-btn,
+        .close-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
 
-    .error-popup {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background-color: #ff0000;
-      color: #ffffff;
-      padding: 10px;
-      font-size: 14px;
-      text-align: center;
-      z-index: 9999;
-    }
-
-    .video-screen {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: black;
-      width: 640px;
-      height: 360px;
-      display: none;
-      z-index: 1;
-    }
-
-    .fullscreen-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: transparent;
-      color: #ffffff;
-      border: none;
-      cursor: pointer;
-      outline: none;
-      z-index: 2;
-    }
-
-    .exit-fullscreen-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: transparent;
-      color: #ffffff;
-      border: none;
-      cursor: pointer;
-      outline: none;
-      z-index: 2;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background-color: transparent;
-      color: #ffffff;
-      border: none;
-      cursor: pointer;
-      outline: none;
-      z-index: 2;
-    }
-  </style>
+        .error-popup {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: red;
+            color: white;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
     <h1>Drone Control</h1>
 
-    <div class="button-grid-top">
-      <button id="takeoffBtn">Take Off</button>
-      <button id="landBtn">Land</button>
-      <button id="startStreamBtn">Start Video Stream</button>
+    <div class="button-grid">
+        <button id="move-left-btn" class="arrow-btn">Move Left</button>
+        <button id="move-forwards-btn" class="arrow-btn">Move Forwards</button>
+        <button id="move-backwards-btn" class="arrow-btn">Move Backwards</button>
+        <button id="move-right-btn" class="arrow-btn">Move Right</button>
     </div>
 
     <div class="button-grid">
-      <button id="moveLeftBtn">Move Left (&larr;)</button>
-      <button id="moveForwardBtn">Move Forward (&uarr;)</button>
-      <button id="moveRightBtn">Move Right (&rarr;)</button>
-      <button id="moveBackwardBtn">Move Backward (&darr;)</button>
+        <button id="move-up-btn" class="arrow-btn">Move Up</button>
+        <button id="rotate-left-btn" class="arrow-btn">Rotate Left</button>
+        <button id="rotate-right-btn" class="arrow-btn">Rotate Right</button>
+        <button id="move-down-btn" class="arrow-btn">Move Down</button>
     </div>
 
-    <div class="video-screen">
-      <video id="videoFeed" width="100%" height="100%" controls>
-        <source src="" type="video/mp4">
-      </video>
-      <button id="fullscreenBtn" class="fullscreen-btn">Fullscreen</button>
-      <button id="exitFullscreenBtn" class="exit-fullscreen-btn">Exit Fullscreen</button>
-      <button id="closeBtn" class="close-btn">Close</button>
+    <button id="start-stream-btn">Start Video Stream</button>
+    <button id="connect-btn">Connect to Drone</button>
+
+    <div class="video-screen" id="video-screen">
+        <video id="video-player" width="100%" height="100%" controls autoplay></video>
+        <button id="fullscreen-btn" class="fullscreen-btn">&#8597; Fullscreen</button>
+        <button id="exit-fullscreen-btn" class="exit-fullscreen-btn">&#8597; Exit Fullscreen</button>
+        <button id="close-btn" class="close-btn">&times; Close</button>
     </div>
 
-    <div id="popupContainer"></div>
-  </div>
+    <div class="error-popup" id="error-popup" style="display: none;"></div>
 
-  <script>
-    $(document).ready(function() {
-      var videoElement = document.getElementById("videoFeed");
+    <script>
+       // Button click event listeners
+        document.getElementById("move-up-btn").addEventListener("click", function () {
+            sendCommand("move-up");
+        });
 
-      // Function to send a command to the drone
-      function sendCommand(command) {
-        // Your code here...
-        console.log('Sending command:', command);
-      }
+        document.getElementById("move-down-btn").addEventListener("click", function () {
+            sendCommand("move-down");
+        });
 
-      // Function to display a popup message
-      function displayPopup(message) {
-        var popupHtml = '<div class="error-popup">' + message + '</div>';
-        $("#popupContainer").html(popupHtml);
+        document.getElementById("move-forwards-btn").addEventListener("click", function () {
+            sendCommand("move-forwards");
+            markButtonPressed("move-forwards-btn");
+        });
 
-        // Remove the popup after a certain duration (e.g., 3 seconds)
-        setTimeout(function() {
-          $(".error-popup").remove();
-        }, 3000);
-      }
+        document.getElementById("move-backwards-btn").addEventListener("click", function () {
+            sendCommand("move-backwards");
+            markButtonPressed("move-backwards-btn");
+        });
 
-      // Function to toggle the video screen
-      function toggleVideoScreen() {
-        $(".video-screen").fadeToggle();
-      }
+        document.getElementById("move-left-btn").addEventListener("click", function () {
+            sendCommand("move-left");
+            markButtonPressed("move-left-btn");
+        });
 
-      // Event listeners for arrow key presses
-      $(document).keydown(function(event) {
-        switch (event.which) {
-          case 37: // Left arrow key
-            sendCommand("move_left");
-            applyActiveStyle($("#moveLeftBtn"));
-            break;
-          case 38: // Up arrow key
-            sendCommand("move_forward");
-            applyActiveStyle($("#moveForwardBtn"));
-            break;
-          case 39: // Right arrow key
-            sendCommand("move_right");
-            applyActiveStyle($("#moveRightBtn"));
-            break;
-          case 40: // Down arrow key
-            sendCommand("move_backward");
-            applyActiveStyle($("#moveBackwardBtn"));
-            break;
+        document.getElementById("move-right-btn").addEventListener("click", function () {
+            sendCommand("move-right");
+            markButtonPressed("move-right-btn");
+        });
+
+        document.getElementById("rotate-left-btn").addEventListener("click", function () {
+            sendCommand("rotate-left");
+        });
+
+        document.getElementById("rotate-right-btn").addEventListener("click", function () {
+            sendCommand("rotate-right");
+        });
+
+        document.getElementById("start-stream-btn").addEventListener("click", function () {
+            startVideoStream();
+        });
+
+        document.getElementById("connect-btn").addEventListener("click", function () {
+            connectToDrone();
+        });
+
+        // Keyboard event listener
+        document.addEventListener("keydown", function (event) {
+            switch (event.key.toLowerCase()) {
+                case "w":
+                    sendCommand("move-forwards");
+                    markButtonPressed("move-forwards-btn");
+                    break;
+                case "s":
+                    sendCommand("move-backwards");
+                    markButtonPressed("move-backwards-btn");
+                    break;
+                case "a":
+                    sendCommand("move-left");
+                    markButtonPressed("move-left-btn");
+                    break;
+                case "d":
+                    sendCommand("move-right");
+                    markButtonPressed("move-right-btn");
+                    break;
+                case "e":
+                    sendCommand("rotate-right");
+                    markButtonPressed("rotate-right-btn");
+                    break;
+                case "q":
+                    sendCommand("rotate-left");
+                    markButtonPressed("rotate-left-btn");
+                    break;
+                case "r":
+                    sendCommand("move-up");
+                    markButtonPressed("move-up-btn");
+                    break;
+                case "f":
+                    sendCommand("move-down");
+                    markButtonPressed("move-down-btn");
+                    break;
+            }
+        });
+
+        document.addEventListener("keyup", function (event) {
+            switch (event.key.toLowerCase()) {
+                case "w":
+                case "s":
+                case "a":
+                case "d":
+                case "e":
+                case "q":
+                case "r":
+                case "f":
+                    sendCommand("stop");
+                    markButtonReleased();
+                    break;
+            }
+        });
+
+        // Function to send command
+        function sendCommand(command) {
+            // Implement the logic to send the command to the drone
+            // This is a placeholder function
+            console.log("Sending command: " + command);
         }
-      });
 
-      // Function to apply active style to the button
-      function applyActiveStyle(button) {
-        $(".button-grid button").removeClass("active-btn");
-        button.addClass("active-btn");
-      }
-
-      // Button click event listeners
-      $("#takeoffBtn").click(function() {
-        sendCommand("takeoff");
-      });
-
-      $("#landBtn").click(function() {
-        sendCommand("land");
-      });
-
-      $("#startStreamBtn").click(function() {
-        sendCommand("start_stream");
-        toggleVideoScreen();
-      });
-
-      $("#moveLeftBtn").click(function() {
-        sendCommand("move_left");
-        applyActiveStyle($(this));
-      });
-
-      $("#moveForwardBtn").click(function() {
-        sendCommand("move_forward");
-        applyActiveStyle($(this));
-      });
-
-      $("#moveRightBtn").click(function() {
-        sendCommand("move_right");
-        applyActiveStyle($(this));
-      });
-
-      $("#moveBackwardBtn").click(function() {
-        sendCommand("move_backward");
-        applyActiveStyle($(this));
-      });
-
-      // Fullscreen button click event listener
-      $("#fullscreenBtn").click(function() {
-        if (videoElement.requestFullscreen) {
-          videoElement.requestFullscreen();
-        } else if (videoElement.mozRequestFullScreen) {
-          videoElement.mozRequestFullScreen();
-        } else if (videoElement.webkitRequestFullscreen) {
-          videoElement.webkitRequestFullscreen();
-        } else if (videoElement.msRequestFullscreen) {
-          videoElement.msRequestFullscreen();
+        // Function to mark button as pressed
+        function markButtonPressed(buttonId) {
+            var button = document.getElementById(buttonId);
+            button.classList.add("pressed");
         }
-      });
 
-      // Exit fullscreen button click event listener
-      $("#exitFullscreenBtn").click(function() {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
+        // Function to mark button as released
+        function markButtonReleased() {
+            var buttons = document.getElementsByClassName("arrow-btn");
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("pressed");
+            }
         }
-      });
 
-      // Close button click event listener
-      $("#closeBtn").click(function() {
-        toggleVideoScreen();
-        videoElement.pause();
-      });
+        // Function to start video stream
+        function startVideoStream() {
+            // Implement the logic to start the video stream
+            // This is a placeholder function
+            console.log("Starting video stream");
+            document.getElementById("video-screen").style.display = "block";
+        }
 
-      // Simulating error on button click
-      $("#landBtn").click(function() {
-        displayPopup("Error: Failed to land the drone");
-      });
-    });
-  </script>
+        // Function to connect to drone
+        function connectToDrone() {
+            // Implement the logic to connect to the drone
+            // This is a placeholder function
+            console.log("Connecting to drone");
+        }
+    </script>
 </body>
 </html>
