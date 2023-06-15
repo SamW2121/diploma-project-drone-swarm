@@ -2,26 +2,31 @@
 <html>
 <head>
     <style>
-         html, body {
+        html, body {
             height: 100%;
             margin: 0;
-            background: linear-gradient(to bottom, #ff6699, #66ccff);
+            background: linear-gradient(to bottom, skyblue, darkorange);
         }
-        .button-grid {
+
+        .arrow-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, minmax(1px, 3rem));
+            width: 3rem;
             gap: 10px;
             margin-bottom: 10px;
+            padding: 1rem;
         }
 
         .arrow-btn {
-            width: 100px;
+            width: 85px;
             height: 50px;
             border: solid black;
-            background-color: white;
+            background-color: hsl(30, 100%, 35%);
+            text-align: left;
             color: black;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 13px;
             cursor: pointer;
         }
 
@@ -37,208 +42,282 @@
             background-color: grey !important;
         }
 
-        #start-stream-btn,
-        #connect-btn {
-            width: 150px;
-            height: 40px;
-            font-size: 16px;
-            cursor: pointer;
-        }
 
         .video-screen {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background-color: #f1f1f1;
-            display: none;
-        }
+            padding: 0 10rem 10rem 10rem;
+            text-align: center;
+            min-width: 50rem;
+            max-width: 150rem;
+            height: 600px;
 
-        .fullscreen-btn,
-        .exit-fullscreen-btn,
-        .close-btn {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            padding: 5px 10px;
-            font-size: 14px;
-            cursor: pointer;
         }
 
         .error-popup {
             position: fixed;
-            top: 10px;
-            right: 10px;
+            width: 20rem;
+            height: 5rem;
             padding: 10px;
+            font-size: 25px;
+            font-weight: bold;
             background-color: red;
             color: white;
             display: none;
         }
+
+        .triangle {
+            position: absolute;
+            top: 30%;
+            margin-left: 2rem;
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 100px solid red;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 20rem);
+            grid-gap: 80px;
+        }
+
+        #switch-btn {
+            width: 20rem;
+            height: 10rem;
+            border: solid black;
+            background-color: hsl(190, 100%, 60%);
+            text-align: center;
+            color: black;
+            font-weight: bold;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        #switch-btn:hover {
+            background-color: hsl(190, 50%, 60%);
+        }
+
+        #switch-btn:active {
+            background-color: hsl(190, 75%, 60%);
+        }
+
+        #connect-btn {
+            width: 20rem;
+            height: 10rem;
+            border: solid black;
+            background-color: lawngreen;
+            text-align: center;
+            color: black;
+            font-weight: bold;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        #connect-btn:hover {
+            background-color: greenyellow;
+        }
+
+        #connect-btn:active {
+            background-color: yellowgreen;
+        }
+
+        #focus-btn {
+            width: 20rem;
+            height: 10rem;
+            border: solid black;
+            background-color: lawngreen;
+            text-align: center;
+            color: black;
+            font-weight: bold;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        #focus-btn:hover {
+            background-color: greenyellow;
+        }
+
+        #focus-btn:active {
+            background-color: yellowgreen;
+        }
+
+        #swarm-btn {
+            width: 20rem;
+            height: 10rem;
+            border: solid black;
+            background-color: hsl(190, 100%, 45%);
+            text-align: center;
+            color: black;
+            font-weight: bold;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        #swarm-btn:hover {
+            background-color: hsl(190, 100%, 65%);
+        }
+
+        #swarm-btn:active {
+            background-color: hsl(190, 100%, 55%);
+        }
     </style>
 </head>
 <body>
-    <h1>Drone Control</h1>
-
-    <div class="button-grid">
-        <button id="move-left-btn" class="arrow-btn">Move Left</button>
-        <button id="move-forwards-btn" class="arrow-btn">Move Forwards</button>
-        <button id="move-backwards-btn" class="arrow-btn">Move Backwards</button>
-        <button id="move-right-btn" class="arrow-btn">Move Right</button>
-    </div>
-
-    <div class="button-grid">
-        <button id="move-up-btn" class="arrow-btn">Move Up</button>
-        <button id="rotate-left-btn" class="arrow-btn">Rotate Left</button>
-        <button id="rotate-right-btn" class="arrow-btn">Rotate Right</button>
-        <button id="move-down-btn" class="arrow-btn">Move Down</button>
-    </div>
-
-    <button id="start-stream-btn">Start Video Stream</button>
-    <button id="connect-btn">Connect to Drone</button>
-
+<h1 style="text-align: center">Drone Mode: Inactive</h1>
+<div>
+    <div class="triangle"></div>
     <div class="video-screen" id="video-screen">
         <video id="video-player" width="100%" height="100%" controls autoplay></video>
-        <button id="fullscreen-btn" class="fullscreen-btn">&#8597; Fullscreen</button>
-        <button id="exit-fullscreen-btn" class="exit-fullscreen-btn">&#8597; Exit Fullscreen</button>
-        <button id="close-btn" class="close-btn">&times; Close</button>
     </div>
+</div>
+<div class="buttons">
+    <div class="arrow-grid">
+        <button id="rotate-left-btn" class="arrow-btn">Turn Left (E)</button>
+        <button id="move-forwards-btn" class="arrow-btn">Forwards (W)</button>
+        <button id="rotate-right-btn" class="arrow-btn">Turn Right (E)</button>
+        <button id="move-up-btn" class="arrow-btn">Go Up (R)</button>
+        <button id="move-left-btn" class="arrow-btn">Move Left (A)</button>
+        <button id="move-backwards-btn" class="arrow-btn">Backwards (S)</button>
+        <button id="move-right-btn" class="arrow-btn">Move Right (D)</button>
+        <button id="move-down-btn" class="arrow-btn">Go Down (F)</button>
+    </div>
+    <div>
+        <button id="switch-btn">Switch Drone Mode</button>
+        <p class="error-popup" id="switch-popup" style="display: none;">No connection active</p>
+    </div>
+    <div>
+        <button id="connect-btn">Connect to Drone</button>
+        <p class="error-popup" id="connect-popup" style="display: none;">Failed to connect to drone.</p>
+    </div>
+    <div>
+        <button id="focus-btn">Focus on: Herd</button>
+        <p class="error-popup" id="focus-popup" style="display: none;">No connection active.</p>
+    </div>
+    <div>
+        <button id="swarm-btn">Call Swarm</button>
+        <p class="error-popup" id="swarm-popup" style="display: none;">No connection active.</p>
+    </div>
+</div>
 
-    <div class="error-popup" id="error-popup" style="display: none;"></div>
+<script>
+    document.getElementById("switch-btn").addEventListener("click", function () {
+        connection('switch-popup');
+    });
 
-    <script>
-       // Button click event listeners
-        document.getElementById("move-up-btn").addEventListener("click", function () {
-            sendCommand("move-up");
-        });
+    document.getElementById("connect-btn").addEventListener("click", function () {
+        connection('connect-popup');
+    });
 
-        document.getElementById("move-down-btn").addEventListener("click", function () {
-            sendCommand("move-down");
-        });
+    document.getElementById("focus-btn").addEventListener("click", function () {
+        connection('focus-popup');
+    });
 
-        document.getElementById("move-forwards-btn").addEventListener("click", function () {
-            sendCommand("move-forwards");
-            markButtonPressed("move-forwards-btn");
-        });
+    document.getElementById("swarm-btn").addEventListener("click", function () {
+        connection('swarm-popup');
+    });
 
-        document.getElementById("move-backwards-btn").addEventListener("click", function () {
-            sendCommand("move-backwards");
-            markButtonPressed("move-backwards-btn");
-        });
-
-        document.getElementById("move-left-btn").addEventListener("click", function () {
-            sendCommand("move-left");
-            markButtonPressed("move-left-btn");
-        });
-
-        document.getElementById("move-right-btn").addEventListener("click", function () {
-            sendCommand("move-right");
-            markButtonPressed("move-right-btn");
-        });
-
-        document.getElementById("rotate-left-btn").addEventListener("click", function () {
-            sendCommand("rotate-left");
-        });
-
-        document.getElementById("rotate-right-btn").addEventListener("click", function () {
-            sendCommand("rotate-right");
-        });
-
-        document.getElementById("start-stream-btn").addEventListener("click", function () {
-            startVideoStream();
-        });
-
-        document.getElementById("connect-btn").addEventListener("click", function () {
-            connectToDrone();
-        });
-
-        // Keyboard event listener
-        document.addEventListener("keydown", function (event) {
-            switch (event.key.toLowerCase()) {
-                case "w":
-                    sendCommand("move-forwards");
-                    markButtonPressed("move-forwards-btn");
-                    break;
-                case "s":
-                    sendCommand("move-backwards");
-                    markButtonPressed("move-backwards-btn");
-                    break;
-                case "a":
-                    sendCommand("move-left");
-                    markButtonPressed("move-left-btn");
-                    break;
-                case "d":
-                    sendCommand("move-right");
-                    markButtonPressed("move-right-btn");
-                    break;
-                case "e":
-                    sendCommand("rotate-right");
-                    markButtonPressed("rotate-right-btn");
-                    break;
-                case "q":
-                    sendCommand("rotate-left");
-                    markButtonPressed("rotate-left-btn");
-                    break;
-                case "r":
-                    sendCommand("move-up");
-                    markButtonPressed("move-up-btn");
-                    break;
-                case "f":
-                    sendCommand("move-down");
-                    markButtonPressed("move-down-btn");
-                    break;
-            }
-        });
-
-        document.addEventListener("keyup", function (event) {
-            switch (event.key.toLowerCase()) {
-                case "w":
-                case "s":
-                case "a":
-                case "d":
-                case "e":
-                case "q":
-                case "r":
-                case "f":
-                    sendCommand("stop");
-                    markButtonReleased();
-                    break;
-            }
-        });
-
-        // Function to send command
-        function sendCommand(command) {
-            // Implement the logic to send the command to the drone
-            // This is a placeholder function
-            console.log("Sending command: " + command);
+    // Keyboard event listener
+    document.addEventListener("keydown", function (event) {
+        switch (event.key.toLowerCase()) {
+            case "w":
+                markButtonPressed("move-forwards-btn");
+                break;
+            case "s":
+                markButtonPressed("move-backwards-btn");
+                break;
+            case "a":
+                markButtonPressed("move-left-btn");
+                break;
+            case "d":
+                markButtonPressed("move-right-btn");
+                break;
+            case "e":
+                markButtonPressed("rotate-right-btn");
+                break;
+            case "q":
+                markButtonPressed("rotate-left-btn");
+                break;
+            case "r":
+                markButtonPressed("move-up-btn");
+                break;
+            case "f":
+                markButtonPressed("move-down-btn");
+                break;
         }
+    });
 
-        // Function to mark button as pressed
-        function markButtonPressed(buttonId) {
-            var button = document.getElementById(buttonId);
-            button.classList.add("pressed");
+    document.addEventListener("keyup", function (event) {
+        switch (event.key.toLowerCase()) {
+            case "w":
+            case "s":
+            case "a":
+            case "d":
+            case "e":
+            case "q":
+            case "r":
+            case "f":
+                markButtonReleased();
+                break;
         }
+    });
 
-        // Function to mark button as released
-        function markButtonReleased() {
-            var buttons = document.getElementsByClassName("arrow-btn");
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove("pressed");
-            }
+    function turnTextOff(buttonId) {
+        element = document.getElementById(buttonId)
+        text = element.textContent;
+        var {width} = element.getBoundingClientRect();
+        if (width < 50) {
+            element.textContent = '';
+            return null
+        } else {
+            element.textContent = text
         }
+    }
 
-        // Function to start video stream
-        function startVideoStream() {
-            // Implement the logic to start the video stream
-            // This is a placeholder function
-            console.log("Starting video stream");
-            document.getElementById("video-screen").style.display = "block";
-        }
+    turnTextOff('rotate-left-btn')
+    turnTextOff('rotate-right-btn')
+    turnTextOff('move-forwards-btn')
+    turnTextOff('move-backwards-btn')
+    turnTextOff('move-left-btn')
+    turnTextOff('move-right-btn')
+    turnTextOff('move-up-btn')
+    turnTextOff('move-down-btn')
 
-        // Function to connect to drone
-        function connectToDrone() {
-            // Implement the logic to connect to the drone
-            // This is a placeholder function
-            console.log("Connecting to drone");
+    // Function to mark button as pressed
+    function markButtonPressed(buttonId) {
+        var button = document.getElementById(buttonId);
+        button.classList.add("pressed");
+    }
+
+    // Function to mark button as released
+    function markButtonReleased() {
+        var buttons = document.getElementsByClassName("arrow-btn");
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove("pressed");
         }
-    </script>
+    }
+
+
+    // Function to connect to drone
+    function connection(id) {
+        // Implement the logic to connect to the drone
+        // This is a placeholder function
+        console.log("Connecting to drone");
+        showErrorMessage(id);
+    }
+
+    function showErrorMessage(id) {
+        var errorPopup = document.getElementById(id);
+        errorPopup.style.display = "block";
+
+        setTimeout(() => {
+            hideErrorMessage(id);
+        }, 3000);
+    }
+
+    function hideErrorMessage(id) {
+        var errorPopup = document.getElementById(id);
+        errorPopup.style.display = "none";
+    }
+</script>
 </body>
 </html>
