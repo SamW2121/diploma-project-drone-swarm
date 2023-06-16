@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 import cv2
 import djitellopy as tellopy
@@ -14,8 +14,11 @@ def start_drone_stream():
     drone.connect()
     drone.start_video()
 
+
 streaming_thread = threading.Thread(target=start_drone_stream)
 streaming_thread.start()
+
+
 
 @app.get("/")
 async def stream_video():
